@@ -1,18 +1,30 @@
 version: 0.2
+
 phases:
+  install:
+    commands:
+      - echo "Installing latest AWS CLI..."
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip
+      - sudo ./aws/install
+      - aws --version
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 226570136943.dkr.ecr.ap-south-1.amazonaws.com
   build:
     commands:
-      - echo Build started on `date`
-      - docker build -t my-app .
-      - docker tag my-app:latest 226570136943.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
+      - echo "Building Docker image..."
+      - IMAGE_TAG=latest
+      - docker build -t container-champion:$IMAGE_TAG .
+      - docker tag container-champion:$IMAGE_TAG 226570136943.dkr.ecr.ap-south-1.amazonaws.com/container-champion:$IMAGE_TAG
   post_build:
     commands:
-      - echo Build completed on `date`
-      - docker push 226570136943.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
+      - echo "Pushing Docker image..."
+      - docker push 226570136943.dkr.ecr.ap-south-1.amazonaws.com/container-champion:$IMAGE_TAG
+      - echo "Writing imagedefinitions.json..."
+      - printf '[{"name":"container-champion","imageUri":"226570136943.dkr.ecr.ap-south-1.amazonaws.com/container-champion:%s"}]' $IMAGE_TAG > imagedefinitions.json
+
 artifacts:
   files:
-    - '**/*'
+    - imagedefinitions.json
