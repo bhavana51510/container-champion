@@ -17,6 +17,9 @@ phases:
       - echo "Pushing the Docker image to ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Image successfully pushed to ECR: $REPOSITORY_URI:$IMAGE_TAG"
+      - echo "Creating imagedefinitions.json for ECS Deploy..."
+      - printf '[{"name":"your-container-name","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
 artifacts:
   files:
-    - '**/*'
+    - imagedefinitions.json
