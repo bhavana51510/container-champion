@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Hello from Container Champion!"  # just to show a change
+    return "Hello from Container Champion !"  # just to show a change
 
 
 if __name__ == "__main__":
