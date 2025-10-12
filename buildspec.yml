@@ -8,17 +8,19 @@ phases:
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 226570136943.dkr.ecr.ap-south-1.amazonaws.com
       - REPOSITORY_URI=226570136943.dkr.ecr.ap-south-1.amazonaws.com/my-app
       - IMAGE_TAG=latest
+
   build:
     commands:
       - echo "Building the Docker image..."
       - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+
   post_build:
     commands:
       - echo "Pushing the Docker image to ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Image successfully pushed to ECR: $REPOSITORY_URI:$IMAGE_TAG"
       - echo "Creating imagedefinitions.json for ECS Deploy..."
-      - printf '[{"name":"your-container-name","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - echo "[{\"name\":\"container-champion\",\"imageUri\":\"$REPOSITORY_URI:$IMAGE_TAG\"}]" > imagedefinitions.json
 
 artifacts:
   files:
